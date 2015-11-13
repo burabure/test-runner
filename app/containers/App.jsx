@@ -78,9 +78,13 @@ export class App extends Component {
               result={test.result}/>
       );
 
+    const isRunning =
+      this.state.stats.running > 0;
+
     return (
       <div>
-        <button onClick={::this.runTests}>Run all tests</button>
+        <button disabled={isRunning}
+                onClick={::this.runTests}>Run all tests</button>
         <TestsStats stats={this.state.stats}
                     totalTests={this.state.tests.length}/>
         <h2>Tests:</h2>
