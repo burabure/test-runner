@@ -18,9 +18,28 @@ const Test = ({description, hasStarted, isRunning, result}) => {
     }
   };
 
+  const statusColor = (resultStatus) => {
+    if (!hasStarted) {
+      return 'initial';
+    }
+    if (isRunning) {
+      return '#eeeeFF';
+    }
+    if (resultStatus) {
+      return '#eeFFee';
+    }
+    return '#FFeeee';
+  };
+
+  const styles = {
+    border    : '1px solid #eee',
+    padding   : '0 10px 20px 10px',
+    background: statusColor(result)
+  };
+
   return (
-    <div>
-      <h2>{description}</h2>
+    <div style={styles}>
+      <h3>{description}</h3>
       Status: {getStatus()}
     </div>
   );

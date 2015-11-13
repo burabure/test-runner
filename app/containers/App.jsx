@@ -69,7 +69,8 @@ export class App extends Component {
   render() {
     const displayTests =
       map(test =>
-        <Test description={test.description}
+        <Test key={test.description}
+              description={test.description}
               hasStarted={test.hasStarted}
               isRunning={test.isRunning}
               result={test.result}/>
@@ -80,7 +81,7 @@ export class App extends Component {
         <button onClick={::this.runTests}>Run all tests</button>
         <TestsStats stats={this.state.stats}
                     totalTests={this.state.tests.length}/>
-
+        <h2>Tests:</h2>
         {displayTests(this.state.tests)}
       </div>
     );
