@@ -28,6 +28,24 @@ export class App extends Component {
     };
   }
 
+  updateTestState(index, result) {
+    const testsResult =
+      update( index,
+        Object.assign({}, this.state.tests[index], { result, isRunning: false })
+      )(this.state.tests);
+
+    const testsStats =
+      Object.assign({}, this.state.stats,
+        {
+          running: this.state.stats.running - 1,
+          passed : this.state.stats.passed + (result ? 1 : 0),
+          failed : this.state.stats.failed + (result ? 0 : 1)
+        }
+      );
+
+    this.setState({tests: testsResult, stats: testsStats});
+  }
+
   runTests() {
     const allStartedAndRunning =
       map( test => {
@@ -46,23 +64,7 @@ export class App extends Component {
     this.setState({tests: allStartedAndRunning, stats: allRunningStats});
 
     for (let index = 0; index < this.state.tests.length; index++) {
-      tests[index].run(result => {
-        const testsResult =
-          update( index,
-            Object.assign({}, this.state.tests[index], { result, isRunning: false })
-          )(this.state.tests);
-
-        const testsStats =
-          Object.assign({}, this.state.stats,
-            {
-              running: this.state.stats.running - 1,
-              passed : this.state.stats.passed + (result ? 1 : 0),
-              failed : this.state.stats.failed + (result ? 0 : 1)
-            }
-          );
-
-        this.setState({tests: testsResult, stats: testsStats});
-      });
+      tests[index].run(this.updateTestState.bind(this, index));
     }
   }
 
