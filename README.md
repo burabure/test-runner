@@ -11,3 +11,4 @@ open http://localhost:3000
 ## ToDo:
  - Clean intervals when re-running tests (would need to alter original tests.js)
  - Start each test separately
+ - Redux would help to separate all the state management logic from App.jsx
