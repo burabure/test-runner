@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { map, update } from 'ramda';
 import tests from '../utils/tests';
 import Test from '../components/Test.jsx';
+import TestsStats from '../components/TestsStats.jsx';
 
 export class App extends Component {
   constructor() {
@@ -18,7 +19,12 @@ export class App extends Component {
       })(tests);
 
     this.state = {
-      tests: initialTestsState
+      tests: initialTestsState,
+      stats: {
+        running: 0,
+        failed : 0,
+        passed : 0
+      }
     };
   }
 
@@ -28,23 +34,39 @@ export class App extends Component {
         return Object.assign({}, test, { hasStarted: true, isRunning: true });
       })(this.state.tests);
 
-    this.setState({tests: allStartedAndRunning});
+    const allRunningStats =
+      Object.assign({}, this.state.stats,
+        {
+          running: this.state.tests.length,
+          passed : 0,
+          failed : 0
+        }
+      );
 
-    for (let i = 0; i < this.state.tests.length; i++) {
-      tests[i].run(result => {
+    this.setState({tests: allStartedAndRunning, stats: allRunningStats});
+
+    for (let index = 0; index < this.state.tests.length; index++) {
+      tests[index].run(result => {
         const testsResult =
-          update( i,
-            Object.assign({}, this.state.tests[i], { result, isRunning: false })
+          update( index,
+            Object.assign({}, this.state.tests[index], { result, isRunning: false })
           )(this.state.tests);
 
-        this.setState({tests: testsResult});
+        const testsStats =
+          Object.assign({}, this.state.stats,
+            {
+              running: this.state.stats.running - 1,
+              passed : this.state.stats.passed + (result ? 1 : 0),
+              failed : this.state.stats.failed + (result ? 0 : 1)
+            }
+          );
+
+        this.setState({tests: testsResult, stats: testsStats});
       });
     }
   }
 
   render() {
-    console.log(this.state);
-
     const displayTests =
       map(test =>
         <Test description={test.description}
@@ -56,6 +78,9 @@ export class App extends Component {
     return (
       <div>
         <button onClick={::this.runTests}>Run all tests</button>
+        <TestsStats stats={this.state.stats}
+                    totalTests={this.state.tests.length}/>
+
         {displayTests(this.state.tests)}
       </div>
     );
